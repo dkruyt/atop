@@ -256,7 +256,7 @@ struct sselection {
 #define MMODERN		'T'
 #define MSYMBOLS	'I'
 #define MBORDERS	'O'
-#define MGRADIENTS	'G'
+#define MGRADIENTS	'K'
 
 #define	MSELUSER	'U'
 #define	MSELPROC	'P'

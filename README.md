@@ -73,7 +73,34 @@ For each interval, it is able to accumulate the resource consumption for all pro
 In combination with the optional kernel module [netatop](https://www.atoptool.nl/downloadnetatop.php) or the BPF module [netatop-bpf](https://github.com/bytedance/netatop-bpf), it shows process-level counters concerning the number of TCP and UDP packets transferred, and the consumed network bandwidth per process.
 
 * __GPU activity on system level and per process.__
-In combination with the optional daemon atopgpud, it shows system-level and process-level counters concerning the load and memory utilization per GPU.
+In combination with the daemon atopgpud, it shows system-level and process-level counters concerning the load and memory utilization per GPU. The daemon is now implemented in C using the NVIDIA Management Library (NVML) directly, eliminating the previous dependency on Python.
+
+## GPU Monitoring
+
+ATOP supports monitoring of NVIDIA GPUs through the `atopgpud` daemon. This daemon collects statistics from NVIDIA GPUs and provides them to ATOP via a TCP socket.
+
+### Native C Implementation
+
+The GPU monitoring daemon (`atopgpud`) is now implemented in C using the NVIDIA Management Library (NVML) directly. This replaces the previous Python-based implementation and offers the following advantages:
+
+- No dependency on Python and the pynvml module
+- Better integration with the system
+- Potentially better performance
+- Simplified installation and maintenance
+
+### Requirements
+
+- NVIDIA drivers must be installed on the system
+- The `libnvidia-ml` shared library must be available (typically part of the NVIDIA drivers package)
+
+### Installation
+
+After installing ATOP, the GPU monitoring daemon can be enabled with:
+
+```
+systemctl enable atopgpu
+systemctl start atopgpu
+```
 
 ## Links
 

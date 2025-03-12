@@ -40,7 +40,7 @@ ALLMODS  = $(OBJMOD0) $(OBJMOD1) $(OBJMOD2) $(OBJMOD3) $(OBJMOD4)
 
 VERS     = $(shell ./atop -V 2>/dev/null| sed -e 's/^[^ ]* //' -e 's/ .*//')
 
-all: 		atop atopsar atopacctd atopconvert atopcat atophide
+all: 		atop atopsar atopacctd atopgpud atopconvert atopcat atophide
 
 atop:		atop.o    $(ALLMODS) Makefile
 		$(CC) atop.o $(ALLMODS) -o atop -lncursesw -lz -lm -lrt $(LDFLAGS)
@@ -50,6 +50,9 @@ atopsar:	atop
 
 atopacctd:	atopacctd.o netlink.o
 		$(CC) atopacctd.o netlink.o -o atopacctd $(LDFLAGS)
+
+atopgpud:	atopgpud.o
+		$(CC) atopgpud.o -o atopgpud -lnvidia-ml $(LDFLAGS)
 
 atopconvert:	atopconvert.o
 		$(CC) atopconvert.o -o atopconvert -lz $(LDFLAGS)
@@ -61,7 +64,7 @@ atophide:	atophide.o
 		$(CC) atophide.o -o atophide -lz $(LDFLAGS)
 
 clean:
-		rm -f *.o atop atopsar atopacctd atopconvert atopcat versdate.h
+		rm -f *.o atop atopsar atopacctd atopgpud atopconvert atopcat versdate.h
 
 distr:
 		rm -f *.o atop
@@ -149,7 +152,7 @@ sysvinstall:	genericinstall
 		fi
 
 
-genericinstall:	atop atopacctd atopconvert atopcat atophide
+genericinstall:	atop atopacctd atopgpud atopconvert atopcat atophide
 		if [ ! -d $(DESTDIR)$(LOGPATH) ]; 		\
 		then	mkdir -p $(DESTDIR)$(LOGPATH); fi
 		if [ ! -d $(DESTDIR)$(DEFPATH) ]; 		\

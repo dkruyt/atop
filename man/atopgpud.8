@@ -1,4 +1,4 @@
-.TH ATOPGPUD 8 "January 2024" "Linux"
+.TH ATOPGPUD 8 "March 2025" "Linux"
 .SH NAME
 .B atopgpud
 - GPU statistics daemon
@@ -50,7 +50,7 @@ When no (Nvidia) GPUs can be found in the target system,
 immediately terminates with exit code 0.
 .PP
 Log messages are written via the
-.I rsyslogd
+.I syslog
 daemon with facility 'daemon'.
 With the -v flag (verbose),
 .I atopgpud
@@ -59,32 +59,16 @@ also logs debug messages.
 .SH INSTALLATION
 The
 .I atopgpud
-daemon is written in Python, so
-a Python interpreter should be installed on the target system.
-This can  either be Python version 2 or Python version 3 (the code of
-.I atopgpud
-is written in a generic way). Take care that the first line of the
-.I atopgpud
-script contains the proper command name to activate a Python interpreter
-that is installed on the target system!
+daemon is written in C and uses the NVIDIA Management Library (NVML)
+to interface with the NVIDIA driver directly. This removes the previous
+dependency on Python and the pynvml module.
 .PP
 The
 .I atopgpud
-daemon depends on the Python module
-.I pynvml
-to interface with the Nvidia driver.
-This module can be installed by the
-.I pip
-or
-.I pip3
-command and is usually packaged under the name 
-.I nvidia-ml-py
-.br
-Finally, the
-.I pynvml
-module is a Python wrapper around the
+daemon depends on the
 .I libnvidia-ml
-shared library that needs to be installed as well.
+shared library that needs to be installed on the system. This library is
+typically installed as part of the NVIDIA drivers package.
 .PP
 After installing the
 .I atop

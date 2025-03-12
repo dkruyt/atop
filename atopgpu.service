@@ -5,8 +5,9 @@ Before=atop.service
 
 [Service]
 ExecStart=/usr/sbin/atopgpud
-Type=oneshot
-RemainAfterExit=yes
+Type=simple
+Restart=on-failure
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target

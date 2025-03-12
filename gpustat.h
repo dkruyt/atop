@@ -29,6 +29,9 @@
 #ifndef	__GPUSTAT__
 #define	__GPUSTAT__
 
+#include "photoproc.h" // For struct gpu
+#include "photosyst.h" // For struct pergpu
+
 struct gpupidstat {
 	long		pid;
 	struct gpu	gpu;

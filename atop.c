@@ -149,7 +149,7 @@
 #include "showlinux.h"
 #include "parseable.h"
 #include "json.h"
-#include "gpucom.h"
+// Using gpustat.h instead of gpucom.h now
 #include "netatop.h"
 
 #define	allflags  "ab:cde:fghijklmnopqrstuvwxyz:123456789ABCDEFGHIJ:KL:MNOP:QRSTUVWXYZ"

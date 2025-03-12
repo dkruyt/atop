@@ -73,19 +73,20 @@ For each interval, it is able to accumulate the resource consumption for all pro
 In combination with the optional kernel module [netatop](https://www.atoptool.nl/downloadnetatop.php) or the BPF module [netatop-bpf](https://github.com/bytedance/netatop-bpf), it shows process-level counters concerning the number of TCP and UDP packets transferred, and the consumed network bandwidth per process.
 
 * __GPU activity on system level and per process.__
-In combination with the daemon atopgpud, it shows system-level and process-level counters concerning the load and memory utilization per GPU. The daemon is now implemented in C using the NVIDIA Management Library (NVML) directly, eliminating the previous dependency on Python.
+Shows system-level and process-level counters concerning the load and memory utilization per GPU. The GPU monitoring is now directly integrated into atop using the NVIDIA Management Library (NVML).
 
 ## GPU Monitoring
 
-ATOP supports monitoring of NVIDIA GPUs through the `atopgpud` daemon. This daemon collects statistics from NVIDIA GPUs and provides them to ATOP via a TCP socket.
+ATOP now includes integrated support for monitoring NVIDIA GPUs directly within the main atop executable. 
 
-### Native C Implementation
+### Direct Integration
 
-The GPU monitoring daemon (`atopgpud`) is now implemented in C using the NVIDIA Management Library (NVML) directly. This replaces the previous Python-based implementation and offers the following advantages:
+GPU monitoring functionality is now integrated directly into atop using the NVIDIA Management Library (NVML). This provides several advantages:
 
-- No dependency on Python and the pynvml module
+- No dependency on external daemons
+- No need to manage separate services
 - Better integration with the system
-- Potentially better performance
+- Better performance
 - Simplified installation and maintenance
 
 ### Requirements
@@ -93,14 +94,14 @@ The GPU monitoring daemon (`atopgpud`) is now implemented in C using the NVIDIA 
 - NVIDIA drivers must be installed on the system
 - The `libnvidia-ml` shared library must be available (typically part of the NVIDIA drivers package)
 
-### Installation
+### Features
 
-After installing ATOP, the GPU monitoring daemon can be enabled with:
+The integrated GPU monitoring provides:
 
-```
-systemctl enable atopgpu
-systemctl start atopgpu
-```
+- System-level GPU statistics (utilization, memory usage)
+- Per-process GPU resource consumption
+- Support for multiple GPUs
+- Automatic detection of GPU capabilities
 
 ## Links
 

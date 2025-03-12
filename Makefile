@@ -35,24 +35,21 @@ OBJMOD0  = version.o
 OBJMOD1  = various.o  deviate.o   procdbase.o
 OBJMOD2  = acctproc.o photoproc.o photosyst.o cgroups.o rawlog.o ifprop.o parseable.o
 OBJMOD3  = showgeneric.o drawbar.o showlinux.o  showsys.o showprocs.o
-OBJMOD4  = atopsar.o  netatopif.o netatopbpfif.o gpucom.o  json.o utsnames.o
+OBJMOD4  = atopsar.o  netatopif.o netatopbpfif.o gpustat.o  json.o utsnames.o
 ALLMODS  = $(OBJMOD0) $(OBJMOD1) $(OBJMOD2) $(OBJMOD3) $(OBJMOD4)
 
 VERS     = $(shell ./atop -V 2>/dev/null| sed -e 's/^[^ ]* //' -e 's/ .*//')
 
-all: 		atop atopsar atopacctd atopgpud atopconvert atopcat atophide
+all: 		atop atopsar atopacctd atopconvert atopcat atophide
 
 atop:		atop.o    $(ALLMODS) Makefile
-		$(CC) atop.o $(ALLMODS) -o atop -lncursesw -lz -lm -lrt $(LDFLAGS)
+		$(CC) atop.o $(ALLMODS) -o atop -lncursesw -lz -lm -lrt -lnvidia-ml $(LDFLAGS)
 
 atopsar:	atop
 		ln -sf atop atopsar
 
 atopacctd:	atopacctd.o netlink.o
 		$(CC) atopacctd.o netlink.o -o atopacctd $(LDFLAGS)
-
-atopgpud:	atopgpud.o
-		$(CC) atopgpud.o -o atopgpud -lnvidia-ml $(LDFLAGS)
 
 atopconvert:	atopconvert.o
 		$(CC) atopconvert.o -o atopconvert -lz $(LDFLAGS)
@@ -64,7 +61,7 @@ atophide:	atophide.o
 		$(CC) atophide.o -o atophide -lz $(LDFLAGS)
 
 clean:
-		rm -f *.o atop atopsar atopacctd atopgpud atopconvert atopcat versdate.h
+		rm -f *.o atop atopsar atopacctd atopconvert atopcat versdate.h
 
 distr:
 		rm -f *.o atop
@@ -80,8 +77,6 @@ install:	genericinstall
 		#
 		cp atop.service        $(DESTDIR)$(SYSDPATH)
 		chmod 0644             $(DESTDIR)$(SYSDPATH)/atop.service
-		cp atopgpu.service     $(DESTDIR)$(SYSDPATH)
-		chmod 0644             $(DESTDIR)$(SYSDPATH)/atopgpu.service
 		cp atop-rotate.service $(DESTDIR)$(SYSDPATH)
 		chmod 0644             $(DESTDIR)$(SYSDPATH)/atop-rotate.service
 		cp atop-rotate.timer   $(DESTDIR)$(SYSDPATH)
@@ -152,7 +147,7 @@ sysvinstall:	genericinstall
 		fi
 
 
-genericinstall:	atop atopacctd atopgpud atopconvert atopcat atophide
+genericinstall:	atop atopacctd atopconvert atopcat atophide
 		if [ ! -d $(DESTDIR)$(LOGPATH) ]; 		\
 		then	mkdir -p $(DESTDIR)$(LOGPATH); fi
 		if [ ! -d $(DESTDIR)$(DEFPATH) ]; 		\
@@ -176,8 +171,6 @@ genericinstall:	atop atopacctd atopgpud atopconvert atopcat atophide
 		ln -sf atop             $(DESTDIR)$(BINPATH)/atopsar
 		cp atopacctd  		$(DESTDIR)$(SBINPATH)/atopacctd
 		chmod 0700 		$(DESTDIR)$(SBINPATH)/atopacctd
-		cp atopgpud  		$(DESTDIR)$(SBINPATH)/atopgpud
-		chmod 0700 		$(DESTDIR)$(SBINPATH)/atopgpud
 		cp atop   		$(DESTDIR)$(BINPATH)/atop-$(VERS)
 		ln -sf atop-$(VERS)     $(DESTDIR)$(BINPATH)/atopsar-$(VERS)
 		cp atopconvert 		$(DESTDIR)$(BINPATH)/atopconvert
@@ -193,7 +186,6 @@ genericinstall:	atop atopacctd atopgpud atopconvert atopcat atophide
 		cp man/atophide.1 	$(DESTDIR)$(MAN1PATH)
 		cp man/atoprc.5  	$(DESTDIR)$(MAN5PATH)
 		cp man/atopacctd.8  	$(DESTDIR)$(MAN8PATH)
-		cp man/atopgpud.8  	$(DESTDIR)$(MAN8PATH)
 
 ##########################################################################
 

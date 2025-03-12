@@ -140,6 +140,7 @@
 
 #include "atop.h"
 #include "acctproc.h"
+#include "gpustat.h"
 #include "ifprop.h"
 #include "photoproc.h"
 #include "photosyst.h"
@@ -771,9 +772,9 @@ engine(void)
 	}
 
 	/*
- 	** open socket to the atopgpud daemon for GPU statistics
+ 	** initialize GPU statistics
 	*/
-        nrgpus = gpud_init();
+        nrgpus = gpu_init();
 
 	if (nrgpus)
 		supportflags |= GPUSTAT;
@@ -819,11 +820,11 @@ engine(void)
 		pretime  = curtime;
 		curtime  = time(0);		/* seconds since 1-1-1970 */
 
-		/*
-		** send request for statistics to atopgpud 
-		*/
-		if (nrgpus)
-			gpupending = gpud_statrequest();
+			/*
+			** prepare for GPU statistics update
+			*/
+			if (nrgpus)
+				gpupending = 1; // marked as pending, will collect statistics later
 
 		/*
 		** take a snapshot of the current system-level metrics 
@@ -846,41 +847,18 @@ engine(void)
 		/*
 		** receive and parse response from atopgpud
 		*/
-		if (nrgpus && gpupending)
-		{
-			nrgpuproc = gpud_statresponse(nrgpus, cursstat->gpu.gpu, &gp);
-
-			gpupending = 0;
-
-			// connection lost or timeout on receive?
-			if (nrgpuproc == -1)
+			/*
+			** collect GPU statistics
+			*/
+			if (nrgpus && gpupending)
 			{
-				int ng;
+				nrgpus = gpu_getsysstat(nrgpus, cursstat->gpu.gpu);
+				nrgpuproc = gpu_getprocstat(&gp);
 
-				// try to reconnect
-        			ng = gpud_init();
+				gpupending = 0;
 
-				if (ng != nrgpus)	// no success
-					nrgpus = 0;
-
-				if (nrgpus)
-				{
-					// request for stats again
-					if (gpud_statrequest())
-					{
-						// receive stats response
-						nrgpuproc = gpud_statresponse(nrgpus,
-						     cursstat->gpu.gpu, &gp);
-
-						// persistent failure?
-						if (nrgpuproc == -1)
-							nrgpus = 0;
-					}
-				}
+				cursstat->gpu.nrgpus = nrgpus;
 			}
-
-			cursstat->gpu.nrgpus = nrgpus;
-		}
 
 		deviatsyst(cursstat, presstat, devsstat,
 				curtime-pretime > 0 ? curtime-pretime : 1);
@@ -967,7 +945,7 @@ engine(void)
  		** merge GPU per-process stats with other per-process stats
 		*/
 		if (nrgpus && nrgpuproc)
-			gpumergeproc(curtpres, ntaskpres,
+			gpu_mergeproc(curtpres, ntaskpres,
 		                     curpexit, nprocexit,
 		 	             gp,       nrgpuproc);
 
@@ -1382,6 +1360,9 @@ twinclean(void)
 {
 	if (twinpid)    // kill lower half process
 		kill(twinpid, SIGTERM);
+
+	// cleanup GPU resources
+	gpu_cleanup();
 
 	(void) unlink(tempname);
 }

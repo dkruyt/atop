@@ -64,6 +64,94 @@ static struct pselection procsel = {"", {USERSTUB, }, {0,},
 static struct sselection syssel;
 
 static void	showhelp(int);
+
+/* Get the appropriate color based on badness and theme */
+int
+getcolor(int badness, int almostcrit)
+{
+    if (!usecolors)
+        return 0;
+        
+    if (moderntheme)
+    {
+        if (badness >= 100)
+            return COLOR_PAIR(COLORBAD_MODERN);
+            
+        if (badness >= almostcrit)
+            return COLOR_PAIR(COLORWARN_MODERN);
+            
+        return COLOR_PAIR(COLOROKAY_MODERN);
+    }
+    else
+    {
+        if (badness >= 100)
+            return COLOR_PAIR(COLORBAD);
+            
+        if (badness >= almostcrit)
+            return COLOR_PAIR(COLORWARN);
+            
+        return COLOR_PAIR(COLOROKAY);
+    }
+}
+
+/* Get the appropriate symbol for a status indicator */
+const char*
+getstatus(int badness, int almostcrit)
+{
+    if (usesymbols)
+    {
+        if (badness >= 100)
+            return CHAR_BAD;
+            
+        if (badness >= almostcrit)
+            return CHAR_WARN;
+            
+        return CHAR_OK;
+    }
+    else
+    {
+        if (badness >= 100)
+            return "!";
+            
+        if (badness >= almostcrit)
+            return "?";
+            
+        return " ";
+    }
+}
+
+/* Draw a box border if enabled */
+void
+drawborder(int startx, int starty, int width, int height)
+{
+    int i;
+    
+    if (!useborders || !screen)
+        return;
+        
+    // Draw top border
+    move(starty, startx);
+    addch(ACS_ULCORNER);
+    for (i = 0; i < width - 2; i++)
+        addch(ACS_HLINE);
+    addch(ACS_URCORNER);
+    
+    // Draw side borders
+    for (i = 1; i < height - 1; i++)
+    {
+        move(starty + i, startx);
+        addch(ACS_VLINE);
+        move(starty + i, startx + width - 1);
+        addch(ACS_VLINE);
+    }
+    
+    // Draw bottom border
+    move(starty + height - 1, startx);
+    addch(ACS_LLCORNER);
+    for (i = 0; i < width - 2; i++)
+        addch(ACS_HLINE);
+    addch(ACS_LRCORNER);
+}
 static int	fixedhead;	/* boolean: fixate header-lines         */
 static int	sysnosort;	/* boolean: suppress sort of resources  */
 static int	threadsort;	/* boolean: sort threads per process    */
@@ -1201,7 +1289,7 @@ text_samp(time_t curtime, int nsecs,
 				switch (select(nrfds, &readfds, (fd_set *)0,
 			                      (fd_set *)0, (struct timeval *)0))
 				{
-				   case -1:
+			   case -1:
 					/*
 					** window change or timer expiration?
 					*/
@@ -1656,11 +1744,11 @@ text_samp(time_t curtime, int nsecs,
 
 				switch (killpid)
 				{
-				   case 0:
-				   case -1:
+			   case 0:
+			   case -1:
 					break;
 
-				   case 1:
+			   case 1:
 					statmsg = "Sending signal to pid 1 not "
 					          "allowed!";
 					beep();
@@ -1903,7 +1991,7 @@ text_samp(time_t curtime, int nsecs,
                                    case 0:
 					break;	// enter key pressed
 
-				   case 4:	// host?
+			   case 4:	// host?
 					if (strcmp(procsel.utsname, "host") == 0)
 					{
 						procsel.utsname[0] = 'H';
@@ -3333,17 +3421,45 @@ generic_init(void)
 				suppressexit = 1;
 			break;
 
-		   case MCOLORS:
-			if (usecolors)
-				usecolors=0;
-			else
-				usecolors=1;
-			break;
 
-		   case MSYSLIMIT:
-			limitedlines();
-			break;
+			   case MCOLORS:
+				if (usecolors)
+					usecolors=0;
+				else
+					usecolors=1;
+				break;
 
+			   case MMODERN:
+				if (moderntheme)
+					moderntheme=0;
+				else
+					moderntheme=1;
+				break;
+
+			   case MSYMBOLS:
+				if (usesymbols)
+					usesymbols=0;
+				else
+					usesymbols=1;
+				break;
+
+			   case MBORDERS:
+				if (useborders)
+					useborders=0;
+				else
+					useborders=1;
+				break;
+
+			   case MGRADIENTS:
+				if (usegradients)
+					usegradients=0;
+				else
+					usegradients=1;
+				break;
+
+			   case MSYSLIMIT:
+				limitedlines();
+				break;
 		   case '2':
 		   case '3':
 		   case '4':
@@ -3471,6 +3587,34 @@ generic_init(void)
 			init_pair(WHITE_GREEN0,    COLOR_WHITE, COLOR_MYGREEN0);
 			init_pair(WHITE_GREEN1,    COLOR_WHITE, COLOR_MYGREEN1);
 			init_pair(WHITE_GREEN2,    COLOR_WHITE, COLOR_MYGREEN2);
+
+				// Modern theme color definitions
+				init_color(COLOR_MODERN_BLUE,   100, 170, 255);
+				init_color(COLOR_MODERN_GREEN,  100, 220, 120);
+				init_color(COLOR_MODERN_ORANGE, 255, 150,  50);
+				init_color(COLOR_MODERN_RED,    255,  80,  80);
+				init_color(COLOR_MODERN_PURPLE, 190, 120, 255);
+				init_color(COLOR_MODERN_TEAL,    60, 180, 190);
+				init_color(COLOR_MODERN_YELLOW, 255, 230,  50);
+				init_color(COLOR_MODERN_CYAN,   120, 230, 230);
+				init_color(COLOR_MODERN_PINK,   255, 150, 200);
+				init_color(COLOR_MODERN_LIME,   180, 255, 100);
+
+				// Modern theme color pairs
+				init_pair(WHITE_MODERN_BLUE,    COLOR_WHITE, COLOR_MODERN_BLUE);
+				init_pair(WHITE_MODERN_GREEN,   COLOR_WHITE, COLOR_MODERN_GREEN);
+				init_pair(WHITE_MODERN_ORANGE,  COLOR_WHITE, COLOR_MODERN_ORANGE);
+				init_pair(WHITE_MODERN_RED,     COLOR_WHITE, COLOR_MODERN_RED);
+				init_pair(WHITE_MODERN_PURPLE,  COLOR_WHITE, COLOR_MODERN_PURPLE);
+				init_pair(WHITE_MODERN_TEAL,    COLOR_WHITE, COLOR_MODERN_TEAL);
+				init_pair(WHITE_MODERN_YELLOW,  COLOR_WHITE, COLOR_MODERN_YELLOW);
+				init_pair(WHITE_MODERN_CYAN,    COLOR_WHITE, COLOR_MODERN_CYAN);
+				init_pair(WHITE_MODERN_PINK,    COLOR_WHITE, COLOR_MODERN_PINK);
+				init_pair(WHITE_MODERN_LIME,    COLOR_WHITE, COLOR_MODERN_LIME);
+
+				// Bold/italic text attributes
+				init_pair(FGCOLORBOLD,   COLOR_WHITE, -1);
+				init_pair(FGCOLORITALIC, COLOR_WHITE, -1);
 		}
 		else
 		{

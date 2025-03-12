@@ -101,6 +101,18 @@ struct sselection {
 #define COLOR_MYGREEN1  36
 #define COLOR_MYGREEN2  37
 
+/* Modern theme colors */
+#define COLOR_MODERN_BLUE    40
+#define COLOR_MODERN_GREEN   41
+#define COLOR_MODERN_ORANGE  42
+#define COLOR_MODERN_RED     43
+#define COLOR_MODERN_PURPLE  44
+#define COLOR_MODERN_TEAL    45
+#define COLOR_MODERN_YELLOW  46
+#define COLOR_MODERN_CYAN    47
+#define COLOR_MODERN_PINK    48
+#define COLOR_MODERN_LIME    49
+
 /*
 ** color pair definitions
 */
@@ -110,6 +122,8 @@ struct sselection {
 #define	FGCOLORCRIT	4
 #define	FGCOLORTHR	5
 #define	FGCOLORGREY	6
+#define FGCOLORBOLD     7
+#define FGCOLORITALIC   8
 
 #define WHITE_GREEN     10
 #define WHITE_ORANGE    11
@@ -132,9 +146,22 @@ struct sselection {
 #define WHITE_GREEN1    31
 #define WHITE_GREEN2    32
 
+/* Modern theme color pairs */
+#define WHITE_MODERN_BLUE    50
+#define WHITE_MODERN_GREEN   51
+#define WHITE_MODERN_ORANGE  52
+#define WHITE_MODERN_RED     53
+#define WHITE_MODERN_PURPLE  54
+#define WHITE_MODERN_TEAL    55
+#define WHITE_MODERN_YELLOW  56
+#define WHITE_MODERN_CYAN    57
+#define WHITE_MODERN_PINK    58
+#define WHITE_MODERN_LIME    59
+
 /*
 ** text and bar color selections
 */
+/* Classic theme */
 #define COLOROKAY       WHITE_GREEN
 #define COLORWARN       WHITE_ORANGE
 #define COLORBAD        WHITE_RED
@@ -159,6 +186,37 @@ struct sselection {
 
 #define COLORNETRECV	WHITE_BROWN1
 #define COLORNETSEND	WHITE_BROWN2
+
+/* Modern theme - these will be used when modern theme is active */
+#define COLOROKAY_MODERN       WHITE_MODERN_GREEN
+#define COLORWARN_MODERN       WHITE_MODERN_ORANGE  
+#define COLORBAD_MODERN        WHITE_MODERN_RED
+
+#define COLORCPUSYS_MODERN     WHITE_MODERN_BLUE
+#define COLORCPUUSR_MODERN     WHITE_MODERN_TEAL
+#define COLORCPUINTR_MODERN    WHITE_MODERN_CYAN
+#define COLORCPUSTEAL_MODERN   WHITE_MODERN_PURPLE
+#define COLORCPUGUEST_MODERN   WHITE_MODERN_PINK
+
+#define COLORMEMFREE_MODERN    WHITE_MODERN_GREEN
+#define COLORMEMCACH_MODERN    WHITE_MODERN_TEAL
+#define COLORMEMHUGE_MODERN    WHITE_MODERN_CYAN
+#define COLORMEMUSED_MODERN    WHITE_MODERN_BLUE
+#define COLORMEMSHM_MODERN     WHITE_MODERN_PURPLE
+#define COLORMEMTMP_MODERN     WHITE_MODERN_PINK
+#define COLORMEMSLAB_MODERN    WHITE_MODERN_ORANGE
+#define COLORMEMBAR_MODERN     WHITE_MODERN_BLUE
+
+#define COLORDSKREAD_MODERN    WHITE_MODERN_TEAL
+#define COLORDSKWRITE_MODERN   WHITE_MODERN_BLUE
+
+#define COLORNETRECV_MODERN    WHITE_MODERN_TEAL
+#define COLORNETSEND_MODERN    WHITE_MODERN_BLUE
+
+/* Special characters for status indicators */
+#define CHAR_OK      "✓"
+#define CHAR_WARN    "!"
+#define CHAR_BAD     "✗"
 
 /*
 ** list with keystrokes/flags
@@ -195,6 +253,10 @@ struct sselection {
 #define	MSYSNOSORT	'F'
 #define	MSYSLIMIT	'l'
 #define MRMSPACES	'Z'
+#define MMODERN		'T'
+#define MSYMBOLS	'I'
+#define MBORDERS	'O'
+#define MGRADIENTS	'G'
 
 #define	MSELUSER	'U'
 #define	MSELPROC	'P'
@@ -253,6 +315,9 @@ void	printg(const char *, ...);
 int	prisyst(struct sstat  *, int, int, int, int, struct sselection *,
 			char *, int, int, int, int, int, int, int, int, int, int, int);
 void	prihead(int, int, char *, char *, char, count_t);
+int     getcolor(int, int);
+const char* getstatus(int, int);
+void    drawborder(int, int, int, int);
 
 struct cglinesel;
 

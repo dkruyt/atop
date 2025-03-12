@@ -108,6 +108,10 @@ extern struct handler	handlers[];
 
 extern char		displaymode;
 extern char		barmono;
+extern char		moderntheme;     /* boolean: use modern color theme */
+extern char		usesymbols;      /* boolean: use unicode symbols    */
+extern char		useborders;      /* boolean: use box drawing chars  */
+extern char		usegradients;    /* boolean: use color gradients    */
 
 extern int      	osrel;
 extern int		osvers;

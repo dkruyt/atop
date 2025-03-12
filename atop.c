@@ -185,7 +185,10 @@ char      	rmspaces   = 0;  /* boolean: remove spaces from command  */
 
 char            displaymode = 'T';      /* 'T' = text, 'D' = draw        */
 char            barmono     = 0; /* boolean: bar without categories?     */
-		                 /* name in case of parseable output     */
+char            moderntheme = 0; /* boolean: use modern color theme      */
+char            usesymbols  = 0; /* boolean: use unicode symbols         */
+char            useborders  = 0; /* boolean: use box drawing chars       */
+char            usegradients = 0; /* boolean: use color gradients        */		                 /* name in case of parseable output     */
 
 char		prependenv = 0;  /* boolean: prepend selected            */
 				 /* environment variables to cmdline     */
